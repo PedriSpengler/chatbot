@@ -1,14 +1,16 @@
 "use client"
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Board } from "../../data/board"
 import type { Columns } from "../../types"
 import { onDragEnd } from "../../helpers/onDragEnd"
-import { AddOutline, TrashOutline, CreateOutline } from "react-ionicons"
+import { AddOutline, TrashOutline, CreateOutline, MoonOutline, SunnyOutline } from "react-ionicons"
 import AddModal from "../../components/Modals/AddModal"
 import Task from "../../components/Task"
 import { v4 as uuidv4 } from "uuid"
+import Navbar from "../../components/Navbar"
+import Sidebar from "../../components/Sidebar"
 
 const Home = () => {
   const [columns, setColumns] = useState<Columns>(Board)
@@ -18,6 +20,20 @@ const Home = () => {
   const [editColumnName, setEditColumnName] = useState("")
   const [newColumnName, setNewColumnName] = useState("")
   const [addingColumn, setAddingColumn] = useState(false)
+  const [darkMode, setDarkMode] = useState(false)
+
+  useEffect(() => {
+    const storedTheme = localStorage.getItem("theme")
+    if (storedTheme === "dark") {
+      setDarkMode(true)
+    }
+  }, [])
+
+  const toggleTheme = () => {
+    const newTheme = darkMode ? "light" : "dark"
+    setDarkMode(!darkMode)
+    localStorage.setItem("theme", newTheme)
+  }
 
   const openModal = (columnId: any) => {
     setSelectedColumn(columnId)
@@ -59,7 +75,17 @@ const Home = () => {
   }
 
   return (
-    <>
+    <div className={darkMode ? "dark" : ""}>
+      <Navbar darkMode={darkMode} />
+      <Sidebar darkMode={darkMode} />
+      
+      {/* Botão de alternância de tema */}
+      <div className="flex justify-end p-4">
+        <button onClick={toggleTheme} className="p-2 rounded-md bg-gray-300 dark:bg-gray-700">
+          {darkMode ? <SunnyOutline color={"#fff"} /> : <MoonOutline color={"#fff"} />}
+        </button>
+      </div>
+
       <DragDropContext onDragEnd={(result: any) => onDragEnd(result, columns, setColumns)}>
         <div className="w-full flex items-start px-5 pb-8 overflow-x-auto">
           <div className="flex gap-4">
@@ -72,7 +98,7 @@ const Home = () => {
                       {...provided.droppableProps}
                       className="flex flex-col md:w-[290px] w-[250px] gap-3 items-center py-5"
                     >
-                      <div className="flex items-center justify-between py-[10px] w-full bg-white rounded-lg shadow-sm text-[#555] font-medium text-[15px] px-3">
+                      <div className="flex items-center justify-between py-[10px] w-full bg-white dark:bg-gray-800 rounded-lg shadow-sm text-[#555] dark:text-white font-medium text-[15px] px-3">
                         {editColumnId === columnId ? (
                           <input
                             type="text"
@@ -80,14 +106,14 @@ const Home = () => {
                             onChange={(e) => setEditColumnName(e.target.value)}
                             onBlur={() => handleEditColumn(columnId, editColumnName)}
                             autoFocus
-                            className="border rounded px-2 py-1 w-full"
+                            className="border rounded px-2 py-1 w-full dark:bg-gray-700 dark:text-white"
                           />
                         ) : (
                           <span>{column.name}</span>
                         )}
                         <div className="flex gap-2">
                           <CreateOutline
-                            color={"#555"}
+                            color="#fff"
                             onClick={() => {
                               setEditColumnId(columnId)
                               setEditColumnName(column.name)
@@ -95,7 +121,7 @@ const Home = () => {
                             className="cursor-pointer"
                           />
                           <TrashOutline
-                            color={"#555"}
+                            color="#fff"
                             onClick={() => handleDeleteColumn(columnId)}
                             className="cursor-pointer"
                           />
@@ -103,7 +129,7 @@ const Home = () => {
                       </div>
                       {column.items.map((task: any, index: any) => (
                         <Draggable key={task.id.toString()} draggableId={task.id.toString()} index={index}>
-                          {(provided: any) => <Task provided={provided} task={task} />}
+                          {(provided: any) => <Task provided={provided} task={task} darkMode={darkMode} />}
                         </Draggable>
                       ))}
                       {provided.placeholder}
@@ -112,15 +138,15 @@ const Home = () => {
                 </Droppable>
                 <div
                   onClick={() => openModal(columnId)}
-                  className="flex cursor-pointer items-center justify-center gap-1 py-[10px] w-[18.2rem] opacity-90 bg-white rounded-lg shadow-sm text-[#555] font-medium text-[15px]"
+                  className="flex cursor-pointer items-center justify-center gap-1 py-[10px] w-[18.2rem] opacity-90 bg-white dark:bg-gray-800 rounded-lg shadow-sm text-[#555] dark:text-white font-medium text-[15px]"
                 >
-                  <AddOutline color={"#555"} />
+                  <AddOutline color="#fff" />
                   Add Conversa
                 </div>
               </div>
             ))}
 
-            {/* Add new column */}
+            {/* Adicionar nova coluna */}
             <div className="flex flex-col gap-0 items-center">
               {addingColumn ? (
                 <div className="flex flex-col items-center gap-2 py-5">
@@ -129,7 +155,7 @@ const Home = () => {
                     placeholder="Nome do funil"
                     value={newColumnName}
                     onChange={(e) => setNewColumnName(e.target.value)}
-                    className="border rounded px-2 py-1 w-full"
+                    className="border rounded px-2 py-1 w-full dark:bg-gray-700 dark:text-white"
                   />
                   <button onClick={handleAddColumn} className="bg-blue-500 text-white px-4 py-1 rounded">
                     Adicionar
@@ -138,23 +164,22 @@ const Home = () => {
               ) : (
                 <div
                   onClick={() => setAddingColumn(true)}
-                  className="flex cursor-pointer items-center justify-center gap-1 py-[10px] w-[18.2rem] opacity-90 mt-5 bg-white rounded-lg shadow-sm text-[#555] font-medium text-[15px]"
+                  className="flex cursor-pointer items-center justify-center gap-1 py-[10px] w-[18.2rem] opacity-90 mt-5 bg-white dark:bg-gray-800 rounded-lg shadow-sm text-[#555] dark:text-white font-medium text-[15px]"
                 >
-                  <AddOutline color={"#555"} />
+                  <AddOutline color={darkMode ? "#fff" : "#555"} />
                   Novo Funil
                 </div>
               )}
             </div>
           </div>
-          {/* Spacer div */}
+          {/* Espaçador */}
           <div className="w-0 flex-shrink-0"></div>
         </div>
       </DragDropContext>
 
-      <AddModal isOpen={modalOpen} onClose={closeModal} setOpen={setModalOpen} handleAddTask={handleAddTask} />
-    </>
+      <AddModal isOpen={modalOpen} onClose={closeModal} setOpen={setModalOpen} handleAddTask={handleAddTask} darkMode={darkMode} />
+    </div>
   )
 }
 
 export default Home
-

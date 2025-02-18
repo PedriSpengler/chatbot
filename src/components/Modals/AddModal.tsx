@@ -22,6 +22,7 @@ const AddModal = ({ isOpen, onClose, setOpen, handleAddTask }: AddModalProps) =>
 		id: uuidv4(),
 		namePaciente: "",
 		celular: "",
+		email: "",
 		lastMessage: "",
 		priority: "",
 		deadline: 0,
@@ -29,22 +30,31 @@ const AddModal = ({ isOpen, onClose, setOpen, handleAddTask }: AddModalProps) =>
 	};
 
 	const [taskData, setTaskData] = useState(initialTaskData);
+	const [error, setError] = useState(false);
 
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
 	) => {
 		const { name, value } = e.target;
 		setTaskData((prev) => ({ ...prev, [name]: value }));
+		setError(false); // Resetar erro ao digitar
 	};
-
 
 	const closeModal = () => {
 		setOpen(false);
 		onClose();
 		setTaskData(initialTaskData);
+		setError(false);
 	};
 
 	const handleSubmit = () => {
+		const { namePaciente, celular, email } = taskData;
+
+		if (!namePaciente || !celular || !email) {
+			setError(true);
+			return;
+		}
+
 		handleAddTask(taskData);
 		closeModal();
 	};
@@ -78,14 +88,15 @@ const AddModal = ({ isOpen, onClose, setOpen, handleAddTask }: AddModalProps) =>
 				/>
 				<input
 					type="text"
-					name="celular"
-					value={taskData.celular}
+					name="email"
+					value={taskData.email}
 					onChange={handleChange}
 					placeholder="Email"
 					className="w-full h-12 px-3 outline-none rounded-md bg-slate-100 border border-slate-300 text-sm font-medium"
 				/>
+				{error && <p className="text-red-500 text-sm">Preencha todos os campos!</p>}
 				<button
-					className="w-full mt-3 rounded-md h-9 bg-orange-400 text-blue-50 font-medium"
+					className="w-full mt-3 rounded-md h-9 bg-orange-400 text-blue-50 font-medium disabled:bg-gray-400"
 					onClick={handleSubmit}
 				>
 					Confirmar Cliente
