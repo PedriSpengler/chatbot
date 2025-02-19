@@ -1,6 +1,6 @@
 "use client"
 
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import { useState, useEffect } from "react"
 import { Board } from "../../data/board"
 import type { Columns } from "../../types"
@@ -120,19 +120,23 @@ const Home = () => {
                             <span>{column.name}</span>
                           )}
                           <div className="flex gap-2">
-                            <CreateOutline
-                              color="#fff"
+                            <span
                               onClick={() => {
                                 setEditColumnId(columnId)
                                 setEditColumnName(column.name)
                               }}
                               className="cursor-pointer"
-                            />
-                            <TrashOutline
-                              color="#fff"
+                            >
+                              <CreateOutline color="#fff" />
+                            </span>
+
+                            <span
                               onClick={() => handleDeleteColumn(columnId)}
                               className="cursor-pointer"
-                            />
+                            >
+                              <TrashOutline color="#fff" />
+                            </span>
+
                           </div>
                         </div>
                         {column.items.map((task: any, index: any) => (
@@ -185,10 +189,10 @@ const Home = () => {
           </div>
         </DragDropContext>
       ) : (
-        <Chat darkMode={darkMode} /> // Renderiza o componente Chat se o role for "Cliente"
+        <Chat/> // Renderiza o componente Chat se o role for "Cliente"
       )}
 
-      <AddModal isOpen={modalOpen} onClose={closeModal} setOpen={setModalOpen} handleAddTask={handleAddTask} darkMode={darkMode} />
+      <AddModal isOpen={modalOpen} onClose={closeModal} setOpen={setModalOpen} handleAddTask={handleAddTask} />
     </div>
   )
 }

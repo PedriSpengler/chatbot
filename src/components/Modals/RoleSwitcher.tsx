@@ -1,7 +1,13 @@
 import { useState } from "react"
 import { ChevronDownOutline } from "react-ionicons"
 
-const RoleSwitcher = ({ role, setRole }) => {
+interface RoleSwitcherProps {
+  role: "Cliente" | "Atendente";
+  setRole: (role: "Cliente" | "Atendente") => void;
+}
+
+
+const RoleSwitcher: React.FC<RoleSwitcherProps> = ({ role, setRole }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
