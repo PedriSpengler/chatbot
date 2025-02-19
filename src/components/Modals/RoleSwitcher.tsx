@@ -1,9 +1,8 @@
-import { useState } from "react";
-import { ChevronDownOutline } from "react-ionicons";
+import { useState } from "react"
+import { ChevronDownOutline } from "react-ionicons"
 
-const RoleSwitcher = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [role, setRole] = useState("Atendente");
+const RoleSwitcher = ({ role, setRole }) => {
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className="relative inline-block">
@@ -18,8 +17,8 @@ const RoleSwitcher = () => {
         <div className="absolute mt-2 w-40 bg-white dark:bg-gray-800 rounded shadow-md">
           <button
             onClick={() => {
-              setRole("Cliente");
-              setIsOpen(false);
+              setRole("Cliente")
+              setIsOpen(false)
             }}
             className="text-white block w-full text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600"
           >
@@ -27,8 +26,8 @@ const RoleSwitcher = () => {
           </button>
           <button
             onClick={() => {
-              setRole("Atendente");
-              setIsOpen(false);
+              setRole("Atendente")
+              setIsOpen(false)
             }}
             className="text-white block w-full text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600"
           >
@@ -37,7 +36,7 @@ const RoleSwitcher = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default RoleSwitcher;
+export default RoleSwitcher

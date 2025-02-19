@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from "uuid"
 import Navbar from "../../components/Navbar"
 import Sidebar from "../../components/Sidebar"
 import RoleSwitcher from "../../components/Modals/RoleSwitcher"
+import Chat from "../../components/Modals/Chat" // Importe o componente Chat
 
 const Home = () => {
   const [columns, setColumns] = useState<Columns>(Board)
@@ -22,6 +23,7 @@ const Home = () => {
   const [newColumnName, setNewColumnName] = useState("")
   const [addingColumn, setAddingColumn] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
+  const [role, setRole] = useState<"Cliente" | "Atendente">("Atendente") // Estado para o role
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme")
@@ -34,6 +36,10 @@ const Home = () => {
     const newTheme = darkMode ? "light" : "dark"
     setDarkMode(!darkMode)
     localStorage.setItem("theme", newTheme)
+  }
+
+  const handleRoleChange = (newRole: "Cliente" | "Atendente") => {
+    setRole(newRole)
   }
 
   const openModal = (columnId: any) => {
@@ -81,103 +87,106 @@ const Home = () => {
       <Sidebar darkMode={darkMode} />
 
       <div className="flex justify-end p-4 gap-4">
-        <RoleSwitcher />
+        <RoleSwitcher role={role} setRole={handleRoleChange} /> {/* Passe o role e a função para o RoleSwitcher */}
         <button onClick={toggleTheme} className="p-2 rounded-md bg-gray-300 dark:bg-gray-700">
           {darkMode ? <SunnyOutline color={"#fff"} /> : <MoonOutline color={"#fff"} />}
         </button>
       </div>
 
-
-      <DragDropContext onDragEnd={(result: any) => onDragEnd(result, columns, setColumns)}>
-        <div className="w-full flex items-start px-5 pb-8 overflow-x-auto">
-          <div className="flex gap-4">
-            {Object.entries(columns).map(([columnId, column]: any) => (
-              <div className="flex flex-col gap-0" key={columnId}>
-                <Droppable droppableId={columnId} key={columnId}>
-                  {(provided: any) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className="flex flex-col md:w-[290px] w-[250px] gap-3 items-center py-5"
-                    >
-                      <div className="flex items-center justify-between py-[10px] w-full bg-white dark:bg-gray-800 rounded-lg shadow-sm text-[#555] dark:text-white font-medium text-[15px] px-3">
-                        {editColumnId === columnId ? (
-                          <input
-                            type="text"
-                            value={editColumnName}
-                            onChange={(e) => setEditColumnName(e.target.value)}
-                            onBlur={() => handleEditColumn(columnId, editColumnName)}
-                            autoFocus
-                            className="border rounded px-2 py-1 w-full dark:bg-gray-700 dark:text-white"
-                          />
-                        ) : (
-                          <span>{column.name}</span>
-                        )}
-                        <div className="flex gap-2">
-                          <CreateOutline
-                            color="#fff"
-                            onClick={() => {
-                              setEditColumnId(columnId)
-                              setEditColumnName(column.name)
-                            }}
-                            className="cursor-pointer"
-                          />
-                          <TrashOutline
-                            color="#fff"
-                            onClick={() => handleDeleteColumn(columnId)}
-                            className="cursor-pointer"
-                          />
+      {role === "Atendente" ? ( // Renderização condicional baseada no role
+        <DragDropContext onDragEnd={(result: any) => onDragEnd(result, columns, setColumns)}>
+          <div className="w-full flex items-start px-5 pb-8 overflow-x-auto">
+            <div className="flex gap-4">
+              {Object.entries(columns).map(([columnId, column]: any) => (
+                <div className="flex flex-col gap-0" key={columnId}>
+                  <Droppable droppableId={columnId} key={columnId}>
+                    {(provided: any) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className="flex flex-col md:w-[290px] w-[250px] gap-3 items-center py-5"
+                      >
+                        <div className="flex items-center justify-between py-[10px] w-full bg-white dark:bg-gray-800 rounded-lg shadow-sm text-[#555] dark:text-white font-medium text-[15px] px-3">
+                          {editColumnId === columnId ? (
+                            <input
+                              type="text"
+                              value={editColumnName}
+                              onChange={(e) => setEditColumnName(e.target.value)}
+                              onBlur={() => handleEditColumn(columnId, editColumnName)}
+                              autoFocus
+                              className="border rounded px-2 py-1 w-full dark:bg-gray-700 dark:text-white"
+                            />
+                          ) : (
+                            <span>{column.name}</span>
+                          )}
+                          <div className="flex gap-2">
+                            <CreateOutline
+                              color="#fff"
+                              onClick={() => {
+                                setEditColumnId(columnId)
+                                setEditColumnName(column.name)
+                              }}
+                              className="cursor-pointer"
+                            />
+                            <TrashOutline
+                              color="#fff"
+                              onClick={() => handleDeleteColumn(columnId)}
+                              className="cursor-pointer"
+                            />
+                          </div>
                         </div>
+                        {column.items.map((task: any, index: any) => (
+                          <Draggable key={task.id.toString()} draggableId={task.id.toString()} index={index}>
+                            {(provided: any) => <Task provided={provided} task={task} darkMode={darkMode} />}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
                       </div>
-                      {column.items.map((task: any, index: any) => (
-                        <Draggable key={task.id.toString()} draggableId={task.id.toString()} index={index}>
-                          {(provided: any) => <Task provided={provided} task={task} darkMode={darkMode} />}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-                <div
-                  onClick={() => openModal(columnId)}
-                  className="flex cursor-pointer items-center justify-center gap-1 py-[10px] w-[18.2rem] opacity-90 bg-white dark:bg-gray-800 rounded-lg shadow-sm text-[#555] dark:text-white font-medium text-[15px]"
-                >
-                  <AddOutline color="#fff" />
-                  Add Conversa
+                    )}
+                  </Droppable>
+                  <div
+                    onClick={() => openModal(columnId)}
+                    className="flex cursor-pointer items-center justify-center gap-1 py-[10px] w-[18.2rem] opacity-90 bg-white dark:bg-gray-800 rounded-lg shadow-sm text-[#555] dark:text-white font-medium text-[15px]"
+                  >
+                    <AddOutline color="#fff" />
+                    Add Conversa
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
-            {/* Adicionar nova coluna */}
-            <div className="flex flex-col gap-0 items-center">
-              {addingColumn ? (
-                <div className="flex flex-col items-center gap-2 py-5">
-                  <input
-                    type="text"
-                    placeholder="Nome do funil"
-                    value={newColumnName}
-                    onChange={(e) => setNewColumnName(e.target.value)}
-                    className="border rounded px-2 py-1 w-full dark:bg-gray-700 dark:text-white"
-                  />
-                  <button onClick={handleAddColumn} className="bg-blue-500 text-white px-4 py-1 rounded">
-                    Adicionar
-                  </button>
-                </div>
-              ) : (
-                <div
-                  onClick={() => setAddingColumn(true)}
-                  className="flex cursor-pointer items-center justify-center gap-1 py-[10px] w-[18.2rem] opacity-90 mt-5 bg-white dark:bg-gray-800 rounded-lg shadow-sm text-[#555] dark:text-white font-medium text-[15px]"
-                >
-                  <AddOutline color={darkMode ? "#fff" : "#555"} />
-                  Novo Funil
-                </div>
-              )}
+              {/* Adicionar nova coluna */}
+              <div className="flex flex-col gap-0 items-center">
+                {addingColumn ? (
+                  <div className="flex flex-col items-center gap-2 py-5">
+                    <input
+                      type="text"
+                      placeholder="Nome do funil"
+                      value={newColumnName}
+                      onChange={(e) => setNewColumnName(e.target.value)}
+                      className="border rounded px-2 py-1 w-full dark:bg-gray-700 dark:text-white"
+                    />
+                    <button onClick={handleAddColumn} className="bg-blue-500 text-white px-4 py-1 rounded">
+                      Adicionar
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => setAddingColumn(true)}
+                    className="flex cursor-pointer items-center justify-center gap-1 py-[10px] w-[18.2rem] opacity-90 mt-5 bg-white dark:bg-gray-800 rounded-lg shadow-sm text-[#555] dark:text-white font-medium text-[15px]"
+                  >
+                    <AddOutline color={darkMode ? "#fff" : "#555"} />
+                    Novo Funil
+                  </div>
+                )}
+              </div>
             </div>
+            {/* Espaçador */}
+            <div className="w-0 flex-shrink-0"></div>
           </div>
-          {/* Espaçador */}
-          <div className="w-0 flex-shrink-0"></div>
-        </div>
-      </DragDropContext>
+        </DragDropContext>
+      ) : (
+        <Chat darkMode={darkMode} /> // Renderiza o componente Chat se o role for "Cliente"
+      )}
 
       <AddModal isOpen={modalOpen} onClose={closeModal} setOpen={setModalOpen} handleAddTask={handleAddTask} darkMode={darkMode} />
     </div>

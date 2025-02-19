@@ -15,7 +15,7 @@ interface Message {
   file: string | null;
 }
 
-const ChatModal = ({ task, onClose, darkMode }: ChatModalProps) => {
+const ChatModal = ({ task, onClose }: ChatModalProps) => {
   const [messages, setMessages] = useState<Message[]>([]); // Tipagem corrigida
   const [inputMessage, setInputMessage] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
