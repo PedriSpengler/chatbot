@@ -62,8 +62,4 @@ Este repositório contém o código do teste técnico para a vaga de **Desenvolv
 
 5. **Abra o projeto no seu navegador:**
    ```sh
-<<<<<<< HEAD
-   http://localhost:3000
-=======
-   http://localhost:3000
->>>>>>> f18e521fe81d19ded5a2b5a9f6c50b2e52147ab6
+   http://localhost:5173
