@@ -14,7 +14,9 @@ import Sidebar from "../../components/Sidebar"
 import RoleSwitcher from "../../components/Modals/RoleSwitcher"
 import Chat from "../../components/Modals/Chat" // Importe o componente Chat
 
+// Componente Home
 const Home = () => {
+  // Estado para as colunas e outras variáveis de controle
   const [columns, setColumns] = useState<Columns>(Board)
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedColumn, setSelectedColumn] = useState("")
@@ -25,6 +27,7 @@ const Home = () => {
   const [darkMode, setDarkMode] = useState(false)
   const [role, setRole] = useState<"Cliente" | "Atendente">("Atendente") // Estado para o role
 
+  // Hook para verificar e aplicar o tema armazenado
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme")
     if (storedTheme === "dark") {
@@ -32,37 +35,44 @@ const Home = () => {
     }
   }, [])
 
+  // Função para alternar entre os modos de tema
   const toggleTheme = () => {
     const newTheme = darkMode ? "light" : "dark"
     setDarkMode(!darkMode)
     localStorage.setItem("theme", newTheme)
   }
 
+  // Função para alterar o role (Cliente ou Atendente)
   const handleRoleChange = (newRole: "Cliente" | "Atendente") => {
     setRole(newRole)
   }
 
+  // Função para abrir o modal de adicionar tarefa
   const openModal = (columnId: any) => {
     setSelectedColumn(columnId)
     setModalOpen(true)
   }
 
+  // Função para fechar o modal de adicionar tarefa
   const closeModal = () => {
     setModalOpen(false)
   }
 
+  // Função para adicionar uma nova tarefa
   const handleAddTask = (taskData: any) => {
     const newBoard = { ...columns }
     newBoard[selectedColumn].items.push(taskData)
     setColumns(newBoard)
   }
 
+  // Função para deletar uma coluna
   const handleDeleteColumn = (columnId: string) => {
     const newColumns = { ...columns }
     delete newColumns[columnId]
     setColumns(newColumns)
   }
 
+  // Função para editar o nome de uma coluna
   const handleEditColumn = (columnId: string, newName: string) => {
     const newColumns = { ...columns }
     newColumns[columnId].name = newName
@@ -70,6 +80,7 @@ const Home = () => {
     setEditColumnId(null)
   }
 
+  // Função para adicionar uma nova coluna
   const handleAddColumn = () => {
     if (newColumnName.trim() === "") return
     const newColumnId = uuidv4()
@@ -82,10 +93,13 @@ const Home = () => {
   }
 
   return (
+    // Bloco principal de renderização com tema condicional
     <div className={darkMode ? "dark" : ""}>
+      {/* Navbar e Sidebar */}
       <Navbar darkMode={darkMode} />
       <Sidebar darkMode={darkMode} />
 
+      {/* Seção de controle do tema e role */}
       <div className="flex justify-end p-4 gap-4">
         <RoleSwitcher role={role} setRole={handleRoleChange} /> {/* Passe o role e a função para o RoleSwitcher */}
         <button onClick={toggleTheme} className="p-2 rounded-md bg-gray-300 dark:bg-gray-700">
@@ -93,10 +107,12 @@ const Home = () => {
         </button>
       </div>
 
-      {role === "Atendente" ? ( // Renderização condicional baseada no role
+      {/* Renderização condicional baseada no role */}
+      {role === "Atendente" ? (
         <DragDropContext onDragEnd={(result: any) => onDragEnd(result, columns, setColumns)}>
           <div className="w-full flex items-start px-5 pb-8 overflow-x-auto">
             <div className="flex gap-4">
+              {/* Mapeamento das colunas */}
               {Object.entries(columns).map(([columnId, column]: any) => (
                 <div className="flex flex-col gap-0" key={columnId}>
                   <Droppable droppableId={columnId} key={columnId}>
@@ -106,6 +122,7 @@ const Home = () => {
                         {...provided.droppableProps}
                         className="flex flex-col md:w-[290px] w-[250px] gap-3 items-center py-5"
                       >
+                        {/* Cabeçalho da coluna */}
                         <div className="flex items-center justify-between py-[10px] w-full bg-white dark:bg-gray-800 rounded-lg shadow-sm text-[#555] dark:text-white font-medium text-[15px] px-3">
                           {editColumnId === columnId ? (
                             <input
@@ -120,6 +137,7 @@ const Home = () => {
                             <span>{column.name}</span>
                           )}
                           <div className="flex gap-2">
+                            {/* Ícones de edição e exclusão */}
                             <span
                               onClick={() => {
                                 setEditColumnId(columnId)
@@ -139,6 +157,8 @@ const Home = () => {
 
                           </div>
                         </div>
+
+                        {/* Tarefas dentro da coluna */}
                         {column.items.map((task: any, index: any) => (
                           <Draggable key={task.id.toString()} draggableId={task.id.toString()} index={index}>
                             {(provided: any) => <Task provided={provided} task={task} darkMode={darkMode} />}
@@ -148,6 +168,8 @@ const Home = () => {
                       </div>
                     )}
                   </Droppable>
+                  
+                  {/* Botão para adicionar nova conversa */}
                   <div
                     onClick={() => openModal(columnId)}
                     className="flex cursor-pointer items-center justify-center gap-1 py-[10px] w-[18.2rem] opacity-90 bg-white dark:bg-gray-800 rounded-lg shadow-sm text-[#555] dark:text-white font-medium text-[15px]"
@@ -158,7 +180,7 @@ const Home = () => {
                 </div>
               ))}
 
-              {/* Adicionar nova coluna */}
+              {/* Seção para adicionar nova coluna */}
               <div className="flex flex-col gap-0 items-center">
                 {addingColumn ? (
                   <div className="flex flex-col items-center gap-2 py-5">
@@ -189,9 +211,11 @@ const Home = () => {
           </div>
         </DragDropContext>
       ) : (
-        <Chat/> // Renderiza o componente Chat se o role for "Cliente"
+        // Renderiza o componente Chat se o role for "Cliente"
+        <Chat/> 
       )}
 
+      {/* Modal para adicionar tarefa */}
       <AddModal isOpen={modalOpen} onClose={closeModal} setOpen={setModalOpen} handleAddTask={handleAddTask} />
     </div>
   )
