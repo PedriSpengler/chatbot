@@ -17,7 +17,7 @@ import {
 		<div className="flex items-center gap-3 cursor-pointer">
 		  <PersonCircle color={darkMode ? "#fff" : "#000"} width={"28px"} height={"28px"} />
 		  <span className="text-blue-400 font-semibold md:text-lg text-sm whitespace-nowrap">
-			Gustavo Zapperini
+			Gustavo Zaratini
 		  </span>
 		  <ChevronDown color={darkMode ? "#fff" : "#000"} width={"16px"} height={"16px"} />
 		</div>

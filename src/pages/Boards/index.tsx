@@ -11,6 +11,7 @@ import Task from "../../components/Task"
 import { v4 as uuidv4 } from "uuid"
 import Navbar from "../../components/Navbar"
 import Sidebar from "../../components/Sidebar"
+import RoleSwitcher from "../../components/Modals/RoleSwitcher"
 
 const Home = () => {
   const [columns, setColumns] = useState<Columns>(Board)
@@ -78,13 +79,14 @@ const Home = () => {
     <div className={darkMode ? "dark" : ""}>
       <Navbar darkMode={darkMode} />
       <Sidebar darkMode={darkMode} />
-      
-      {/* Botão de alternância de tema */}
-      <div className="flex justify-end p-4">
+
+      <div className="flex justify-end p-4 gap-4">
+        <RoleSwitcher />
         <button onClick={toggleTheme} className="p-2 rounded-md bg-gray-300 dark:bg-gray-700">
           {darkMode ? <SunnyOutline color={"#fff"} /> : <MoonOutline color={"#fff"} />}
         </button>
       </div>
+
 
       <DragDropContext onDragEnd={(result: any) => onDragEnd(result, columns, setColumns)}>
         <div className="w-full flex items-start px-5 pb-8 overflow-x-auto">
