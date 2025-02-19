@@ -84,6 +84,8 @@ Acesse a aplicação no navegador em http://localhost:3000.
 
 Implementar testes unitários e de integração para garantir a qualidade do código.
 
+Retirar Bugs de darkmode.
+
 Adicionar funcionalidades extras, como notificações push ou integração com outras ferramentas de atendimento.
 
 Melhorar a interface do usuário com animações e transições mais suaves.
